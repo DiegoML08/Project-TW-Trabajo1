@@ -9,11 +9,11 @@ app.use(cors());
 app.use(express.json());
 
 const pool = new Pool({
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    database: process.env.DB_NAME
+    user: 'postgres',
+    password: '12345',
+    host: 'localhost',
+    port: 5432,
+    database: 'Almacen'
 });
 
 // He cambiado la palabara "contactos" a "socios" porque esta tabla si existe en la base de datos ~DiegoDev
@@ -41,10 +41,6 @@ app.delete('/socios/:id', async (req, res) => {
     res.sendStatus(204);
 });
 
-
-app.listen(5000, () => {
-    console.log('Servidor corriendo en el puerto 5000');
-});
 
 // Endpoint para login
 app.post('/login', async (req, res) => {
@@ -98,4 +94,138 @@ app.post('/register', async (req, res) => {
         console.error('Error en registro:', error);
         res.status(500).json({ success: false, message: 'Error del servidor' });
     }
+});
+
+
+
+
+// ============= RUTAS PARA ARTICULO (Nick) =============
+
+// Obtener todos los artículos con información de línea
+app.get('/articulos', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT a.*, l.descripcion as linea_descripcion 
+            FROM articulo a 
+            JOIN linea l ON a.idlinea = l.idlinea 
+            ORDER BY a.idarticulo
+        `);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error al obtener artículos:', error);
+        res.status(500).json({ message: 'Error del servidor' });
+    }
+});
+
+// Obtener un artículo específico
+app.get('/articulos/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await pool.query(`
+            SELECT a.*, l.descripcion as linea_descripcion 
+            FROM articulo a 
+            JOIN linea l ON a.idlinea = l.idlinea 
+            WHERE a.idarticulo = $1
+        `, [id]);
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: 'Artículo no encontrado' });
+        }
+        
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Error al obtener artículo:', error);
+        res.status(500).json({ message: 'Error del servidor' });
+    }
+});
+
+// Obtener todas las líneas (para el select en el formulario)
+app.get('/lineas', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM linea ORDER BY idlinea');
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error al obtener líneas:', error);
+        res.status(500).json({ message: 'Error del servidor' });
+    }
+});
+
+// Crear nuevo artículo
+app.post('/articulos', async (req, res) => {
+    try {
+        const { idarticulo, descripcion, idlinea, unidad, stock, preciocosto, precioventa, descuento } = req.body;
+        
+        const result = await pool.query(`
+            INSERT INTO articulo (idarticulo, descripcion, idlinea, unidad, stock, preciocosto, precioventa, descuento) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
+            RETURNING *
+        `, [idarticulo, descripcion, idlinea, unidad, stock, preciocosto, precioventa, descuento]);
+        
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error('Error al crear artículo:', error);
+        if (error.code === '23505') { // Código de error para clave duplicada
+            res.status(400).json({ message: 'El código de artículo ya existe' });
+        } else if (error.code === '23503') { // Código de error para foreign key
+            res.status(400).json({ message: 'La línea especificada no existe' });
+        } else {
+            res.status(500).json({ message: 'Error del servidor' });
+        }
+    }
+});
+
+// Actualizar artículo
+app.put('/articulos/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { descripcion, idlinea, unidad, stock, preciocosto, precioventa, descuento } = req.body;
+        
+        const result = await pool.query(`
+            UPDATE articulo 
+            SET descripcion = $1, idlinea = $2, unidad = $3, stock = $4, 
+                preciocosto = $5, precioventa = $6, descuento = $7
+            WHERE idarticulo = $8 
+            RETURNING *
+        `, [descripcion, idlinea, unidad, stock, preciocosto, precioventa, descuento, id]);
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: 'Artículo no encontrado' });
+        }
+        
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error('Error al actualizar artículo:', error);
+        if (error.code === '23503') {
+            res.status(400).json({ message: 'La línea especificada no existe' });
+        } else {
+            res.status(500).json({ message: 'Error del servidor' });
+        }
+    }
+});
+
+// Eliminar artículo
+app.delete('/articulos/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        const result = await pool.query('DELETE FROM articulo WHERE idarticulo = $1 RETURNING *', [id]);
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: 'Artículo no encontrado' });
+        }
+        
+        res.json({ message: 'Artículo eliminado correctamente' });
+    } catch (error) {
+        console.error('Error al eliminar artículo:', error);
+        if (error.code === '23503') {
+            res.status(400).json({ message: 'No se puede eliminar: el artículo está siendo usado en otras tablas' });
+        } else {
+            res.status(500).json({ message: 'Error del servidor' });
+        }
+    }
+});
+
+
+app.listen(5000, () => {
+    console.log('Servidor corriendo en el puerto 5000');
 });

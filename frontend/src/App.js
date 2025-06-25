@@ -1,7 +1,9 @@
 // src/App.js
+import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from './componentes/login';
 import Register from './componentes/register';
+import ArticulosCrud from './componentes/ArticulosCrud';
 
 function App() {
     return (
@@ -9,6 +11,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/articulos" element={<ArticulosCrud />} />
             </Routes>
         </BrowserRouter>
     );
