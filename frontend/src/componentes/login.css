@@ -1,0 +1,146 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #f2f2f2;
+}
+
+.login-box {
+    display: flex;
+    width: 800px;
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.login-left,
+.login-right {
+    flex: 1;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.login-left {
+    background: #fff;
+}
+
+.login-left h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+    font-size: 24px;
+}
+
+.login-field {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.login-field label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #6a11cb;
+    color: #fff;
+    font-size: 14px;
+    border-top-left-radius: 30px;
+    border-bottom-left-radius: 30px;
+    pointer-events: none;
+}
+
+.login-field input {
+    width: 100%;
+    padding: 12px 20px;
+    padding-left: 130px;
+    border: 1px solid #ddd;
+    border-radius: 30px;
+    outline: none;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.login-field input:focus {
+    border-color: #6a11cb;
+}
+
+.login-button {
+    margin-top: 10px;
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(90deg, #6a11cb, #2575fc);
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.login-button:hover {
+    opacity: 0.9;
+}
+
+.login-footer {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 13px;
+    color: #666;
+}
+
+.login-right {
+    background: linear-gradient(90deg, #6a11cb, #2575fc);
+    color: #fff;
+    text-align: center;
+}
+
+.login-right h3 {
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+.login-right p {
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.login-right .logo {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.logo-img {
+    display: block;
+    margin: 20px auto 0;
+    max-width: 120px;
+    height: auto;
+    border-radius: 12px; /* redondea bordes */
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.logo-img:hover {
+    transform: scale(1.05);
+    opacity: 0.95;
+}
+
+.error-message {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    text-align: center;
+}

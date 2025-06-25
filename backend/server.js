@@ -45,3 +45,26 @@ app.delete('/socios/:id', async (req, res) => {
 app.listen(5000, () => {
     console.log('Servidor corriendo en el puerto 5000');
 });
+
+// Endpoint para login
+app.post('/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        // Buscar usuario con el email proporcionado
+        const result = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
+
+        // Verificar si existe el usuario y la contraseña es correcta
+        if (result.rows.length === 0 || result.rows[0].contraseña !== password) {
+            return res.status(401).json({ message: "Email o contraseña incorrectos" });
+        }
+
+        // Usuario autenticado correctamente
+        const token = "auth_" + Date.now(); // En producción usar JWT
+        res.json({ success: true, token, message: "Inicio de sesión exitoso" });
+
+    } catch (error) {
+        console.error("Error en autenticación:", error);
+        res.status(500).json({ message: "Error del servidor" });
+    }
+});
