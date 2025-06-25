@@ -68,3 +68,34 @@ app.post('/login', async (req, res) => {
         res.status(500).json({ message: "Error del servidor" });
     }
 });
+
+app.post('/register', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        // 1) Verificar que el email no exista ya
+        const { rows } = await pool.query(
+            'SELECT 1 FROM usuarios WHERE email = $1',
+            [email]
+        );
+        if (rows.length) {
+            return res
+                .status(409)
+                .json({ success: false, message: 'El email ya está registrado' });
+        }
+
+        // 2) Insertar usuario
+        const result = await pool.query(
+            'INSERT INTO usuarios (email, contraseña) VALUES ($1, $2) RETURNING id, email',
+            [email, password]
+        );
+
+        // 3) Responder con éxito
+        res
+            .status(201)
+            .json({ success: true, user: result.rows[0], message: 'Usuario creado' });
+    } catch (error) {
+        console.error('Error en registro:', error);
+        res.status(500).json({ success: false, message: 'Error del servidor' });
+    }
+});

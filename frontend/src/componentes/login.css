@@ -49,16 +49,16 @@
     top: 0;
     left: 0;
     height: 100%;
-    width: 110px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 120px;             /* ajustado a tu gusto */
+    display: grid;            /* deja sólo grid */
+    place-items: center;      /* centrado X e Y */
     background: #6a11cb;
     color: #fff;
     font-size: 14px;
     border-top-left-radius: 30px;
     border-bottom-left-radius: 30px;
     pointer-events: none;
+    text-align: center;
 }
 
 .login-field input {

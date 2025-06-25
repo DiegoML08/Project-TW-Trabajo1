@@ -2,6 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { API_BASE_URL } from '../config';
 import './login.css';
+import { Link } from 'react-router-dom';
 
 function Login() {
     const [email, setEmail] = useState('');
@@ -56,7 +57,7 @@ function Login() {
                         Iniciar sesión
                     </button>
                     <p className="login-footer">
-                        ¿No tienes una cuenta? <a href="#">Regístrate aquí</a>
+                        ¿No tienes una cuenta? <Link to="/register">Regístrate aquí</Link>
                     </p>
                 </div>
                 <div className="login-right">
