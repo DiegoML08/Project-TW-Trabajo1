@@ -1,4 +1,5 @@
 require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const { Pool } = require('pg');
@@ -15,25 +16,31 @@ const pool = new Pool({
     database: process.env.DB_NAME
 });
 
-// Obtener contactos
-app.get('/contactos', async (req, res) => {
-    const result = await pool.query('SELECT * FROM contactos');
+// He cambiado la palabara "contactos" a "socios" porque esta tabla si existe en la base de datos ~DiegoDev
+
+// Obtener contactos/socios
+app.get('/socios', async (req, res) => {
+    const result = await pool.query('SELECT * FROM socio');
     res.json(result.rows);
 });
 
-// Agregar contacto
-app.post('/contactos', async (req, res) => {
+// Agregar contacto/socios
+app.post('/socios', async (req, res) => {
     const { nombre, telefono } = req.body;
-    const result = await pool.query('INSERT INTO contactos (nombre, telefono) VALUES ($1, $2) RETURNING *', [nombre, telefono]);
+    const result = await pool.query(
+        'INSERT INTO socio (nombre, telefono) VALUES ($1, $2) RETURNING *', [nombre, telefono]
+    );
     res.json(result.rows[0]);
 });
 
-// Eliminar contacto
-app.delete('/contactos/:id', async (req, res) => {
+
+// Eliminar contacto/socios
+app.delete('/socios/:id', async (req, res) => {
     const { id } = req.params;
-    await pool.query('DELETE FROM contactos WHERE id = $1', [id]);
+    await pool.query('DELETE FROM socio WHERE idsocio = $1', [id]);
     res.sendStatus(204);
 });
+
 
 app.listen(5000, () => {
     console.log('Servidor corriendo en el puerto 5000');
